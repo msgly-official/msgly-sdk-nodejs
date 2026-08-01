@@ -1,6 +1,6 @@
 # Msgly Node.js SDK
 
-Official Node.js SDK for the Msgly API.
+Official Node.js SDK for the [Msgly API](https://msgly.id). Easily integrate WhatsApp OTP, single messaging, and template management into your Node.js applications.
 
 ## Installation
 
@@ -10,85 +10,109 @@ Install the package via npm:
 npm install msgly-sdk
 ```
 
-## Usage (CommonJS & ESM)
+---
+
+## Quick Start (CommonJS & ESM)
 
 This SDK supports both CommonJS (`require`) and ES Modules (`import`).
 
 ```javascript
 const { MsglyClient } = require('msgly-sdk');
-// or
-// import { MsglyClient } from 'msgly-sdk';
+// or: import { MsglyClient } from 'msgly-sdk';
 
 const msgly = new MsglyClient({
-    baseUrl: 'https://api.msgly.id', // Optional, default is https://api.msgly.id
-    clientId: 'your-client-id',
-    clientSecret: 'your-client-secret',
+    baseUrl: 'https://api.msgly.id', // Optional, defaults to https://api.msgly.id
+    clientId: 'YOUR_CLIENT_ID',
+    clientSecret: 'YOUR_CLIENT_SECRET',
 });
+```
 
-async function run() {
+---
+
+## Code Examples
+
+### 1. Send OTP (Mode 1: OTP Rotation Aktif)
+Jika fitur **OTP Rotation** diaktifkan di akun Anda oleh Admin, Anda tidak perlu menentukan `template_id`. Cukup kirim kode OTP, dan server Msgly akan secara otomatis merotasi template WhatsApp secara acak.
+
+```javascript
+async function sendOTPRotation() {
     try {
-        const result = await msgly.message.sendOTP({
-            xid: 'otp_' + Date.now(),
-            to: '6281234567890',
-            code: '123456',
+        const response = await msgly.message.sendOTP({
+            xid: 'otp_' + Date.now(), // ID unik transaksi Anda (harus unik)
+            to: '6281234567890',      // Nomor tujuan format internasional (misal 628...)
+            code: '482910',           // Kode OTP yang disubstitusikan ke template
         });
-        console.log('OTP Sent:', result);
-
-        // Template examples
-        const templates = await msgly.template.list({ page: 1, per_page: 10 });
-        console.log('Templates list:', templates);
-
-        if (templates.data?.data?.length > 0) {
-            const templateId = templates.data.data[0].id;
-            const template = await msgly.template.getById(templateId);
-            console.log('Template detail:', template);
-        }
+        console.log('OTP Sent (Rotation):', response);
     } catch (error) {
-        console.error('Error:', error.message, error.responseData);
+        console.error('Error sending OTP:', error.message);
     }
 }
-
-run();
 ```
+
+---
+
+### 2. Send OTP (Mode 2: Manual Template Selection)
+Jika **OTP Rotation TIDAK aktif**, Anda wajib menentukan `template_id` dan array `params` secara manual.
+
+```javascript
+async function sendOTPManual() {
+    try {
+        const response = await msgly.message.sendOTP({
+            xid: 'otp_' + Date.now(),
+            to: '6281234567890',
+            template: {
+                template_id: 'c8f7a1b2-3c4d-5e6f-7a8b-9c0d1e2f3a4b', // UUID template
+                params: ['482910'], // Param {{1}} diisi '482910'
+            },
+        });
+        console.log('OTP Sent (Manual):', response);
+    } catch (error) {
+        console.error('Error sending OTP:', error.message);
+    }
+}
+```
+
+---
+
+### 3. Manage Templates (List & Get Detail)
+
+```javascript
+async function manageTemplates() {
+    try {
+        // List templates dengan pagination & pencarian
+        const templates = await msgly.template.list({
+            search: 'OTP', // Opsional: kata kunci pencarian
+            page: 1,
+            per_page: 10
+        });
+        console.log('Templates List:', templates);
+
+        // Ambil detail template berdasarkan ID
+        if (templates.data?.data?.length > 0) {
+            const templateId = templates.data.data[0].id;
+            const detail = await msgly.template.getById(templateId);
+            console.log('Template Detail:', detail);
+        }
+    } catch (error) {
+        console.error('Error fetching templates:', error.message);
+    }
+}
+```
+
+---
 
 ## Features
 
-- **Auto-Refresh Token**: Automatically manages OAuth2 access tokens and refreshes them when expired.
-- **Dual Package Support**: Works natively with `require()` and `import` through Node.js export mappings.
-- **JSDoc Typed**: Full autocompletion in your favorite IDE.
-- **Customizable**: Override the default API URL if needed.
-
-## Publishing to npm Registry
-
-Follow these steps to publish this SDK to the npm registry:
-
-1. **Login to npm**:
-   ```bash
-   npm login
-   ```
-   (Enter your username, password, and email)
-
-2. **Verify Package Version**:
-   Check the `version` in `package.json` (e.g., `"1.0.0"`). Before publishing a new update, bump the version:
-   ```bash
-   npm version patch # 1.0.1
-   # or npm version minor # 1.1.0
-   ```
-
-3. **Publish the Package**:
-   ```bash
-   npm publish
-   ```
-   If it's a scoped package (`@your-org/msgly-sdk`), run `npm publish --access public`.
-
-4. **Done!**
-   Your package will be available at `https://npmjs.com/package/msgly-sdk`.
+- 🔑 **Auto-Refresh OAuth Token**: Mengelola dan memperbarui access token OAuth2 secara otomatis saat kadaluarsa.
+- ⚡ **Dual Module Support**: Mendukung `require()` (CommonJS) & `import` (ESM).
+- 🔄 **OTP Rotation & Manual Mode**: Mendukung pengiriman OTP fleksibel.
+- 💡 **Full Autocompletion**: JSDoc typed untuk memberikan saran autocomplete di IDE seperti VS Code.
 
 ## Requirements
 
 - Node.js >= 14.0.0
-- Axios
 
 ## License
 
 ISC
+
