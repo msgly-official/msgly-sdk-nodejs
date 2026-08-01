@@ -1,0 +1,29 @@
+{
+  "name": "msgly-sdk",
+  "version": "1.0.0",
+  "description": "Node.js SDK for Msgly API",
+  "main": "src/index.js",
+  "exports": {
+    ".": {
+      "require": "./src/index.js",
+      "import": "./src/index.js"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "msgly",
+    "sdk",
+    "sms",
+    "otp"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
