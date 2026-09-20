@@ -50,6 +50,54 @@ class Message {
     }
 
     /**
+     * Send a notification message (hybrid: direct text or template)
+     * @param {Object} params
+     * @param {string} params.xid
+     * @param {string} params.to
+     * @param {string} [params.message]
+     * @param {Object} [params.template]
+     * @param {string} params.template.template_id
+     * @param {Array<string>} params.template.params
+     * @returns {Promise<Object>}
+     */
+    async sendNotification(params) {
+        const payload = {
+            xid: params.xid,
+            to: params.to,
+            type: 'notification'
+        };
+        if (params.message) payload.message = params.message;
+        if (params.template) payload.template = params.template;
+        return this._send(payload);
+    }
+
+    /**
+     * Send a reminder message (hybrid: direct text or template, with optional scheduling)
+     * @param {Object} params
+     * @param {string} params.xid
+     * @param {string} params.to
+     * @param {string} [params.message]
+     * @param {Object} [params.template]
+     * @param {string} params.template.template_id
+     * @param {Array<string>} params.template.params
+     * @param {string|Date} [params.scheduled_at]
+     * @returns {Promise<Object>}
+     */
+    async sendReminder(params) {
+        const payload = {
+            xid: params.xid,
+            to: params.to,
+            type: 'reminder'
+        };
+        if (params.message) payload.message = params.message;
+        if (params.template) payload.template = params.template;
+        if (params.scheduled_at) {
+            payload.scheduled_at = params.scheduled_at instanceof Date ? params.scheduled_at.toISOString() : params.scheduled_at;
+        }
+        return this._send(payload);
+    }
+
+    /**
      * Internal send method handling auth and retry
      * @param {Object} payload 
      * @param {boolean} isRetry 

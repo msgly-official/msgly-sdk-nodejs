@@ -1,6 +1,6 @@
 {
   "name": "msgly-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Node.js SDK for Msgly API",
   "main": "src/index.js",
   "exports": {

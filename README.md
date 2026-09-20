@@ -74,7 +74,51 @@ async function sendOTPManual() {
 
 ---
 
-### 3. Manage Templates (List & Get Detail)
+### 3. Send Notification (WhatsApp Notification)
+Kirim notifikasi operasional WhatsApp menggunakan teks bebas ataupun template berparameter.
+
+```javascript
+async function sendNotification() {
+    try {
+        const response = await msgly.message.sendNotification({
+            xid: 'notif_' + Date.now(),
+            to: '6281234567890',
+            message: 'Halo Budi, transaksi pesanan #INV-2049 Anda telah diverifikasi.',
+        });
+        console.log('Notification Sent:', response);
+    } catch (error) {
+        console.error('Error sending notification:', error.message);
+    }
+}
+```
+
+---
+
+### 4. Send Reminder (WhatsApp Reminder)
+Kirim pengingat terjadwal atau langsung. Gunakan parameter `scheduled_at` (format ISO 8601/Date) untuk pengiriman terjadwal.
+
+```javascript
+async function sendReminder() {
+    try {
+        // Contoh terjadwal 1 hari ke depan
+        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+        const response = await msgly.message.sendReminder({
+            xid: 'reminder_' + Date.now(),
+            to: '6281234567890',
+            message: 'Halo, pengingat jadwal webinar Anda akan dimulai besok pukul 10:00 WIB.',
+            scheduled_at: tomorrow,
+        });
+        console.log('Reminder Queued/Scheduled:', response);
+    } catch (error) {
+        console.error('Error sending reminder:', error.message);
+    }
+}
+```
+
+---
+
+### 5. Manage Templates (List & Get Detail)
 
 ```javascript
 async function manageTemplates() {
